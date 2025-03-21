@@ -7,6 +7,7 @@ using System.Numerics;
 using System.Security.Cryptography;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Collections.Generic;
 
 //static class to hold BigInteger extension, including Miller-Rabin primality test.
 public static class BigIntegerExtensions {
@@ -56,7 +57,6 @@ public static class BigIntegerExtensions {
         return true;
     }
 
-    
     //returns a random BigInteger in [minValue..maxValue], using RandomNumberGenerator.
     private static BigInteger RandomBigIntegerInRange(BigInteger minValue, BigInteger maxValue) {
         //assume minValue <= maxValue and both > 0
@@ -192,34 +192,86 @@ public class Program{
         return value;
     }
  
-    //very naive factor-count method.  For extremely large numbers,
-    //this will be too slow!  Replace with a better factoring method for real use.
-
+    //using Pollard's Rho, then computing total factors from prime factor exponents.
     private static long CountFactors(BigInteger n)
     {
+        //handle trivial cases
         if (n <= 1) return 0;
         if (n == 2) return 2; //1,2
 
-        //we'll do trial division up to sqrt(n)
-        long count = 0;
-        BigInteger limit = n.Sqrt(); //or use a custom BigInteger sqrt
-        for (BigInteger i = 1; i <= limit; i++)
-        {
-            if (n % i == 0)
-            {
-                //i is a factor
-                count++;
+        //dictionary of prime factor => exponent
+        Dictionary<BigInteger, long> primeFactors = new Dictionary<BigInteger, long>();
 
-                if (i != (n / i))
-                    count++;
-            }
+        //factor n fully, then compute the product of (exponent + 1) for factor count.
+        FactorPollardRho(n, primeFactors);
+
+        long totalFactors = 1;
+        foreach (long exp in primeFactors.Values)
+        {
+            //(e+1) factor formula
+            totalFactors *= (exp + 1);
         }
-        return count;
+        return totalFactors;
     }
 
-    
-    //prints usage/help text along with an error message.
+    //pollard's Rho factorization approach to populate primeFactors dictionary
+    private static void FactorPollardRho(BigInteger n, Dictionary<BigInteger, long> primeFactors)
+    {
+        //if n < 2, nothing to do
+        if (n < 2) return;
 
+        //if n is prime, increment its exponent in primeFactors.
+        if (n.IsProbablyPrime()) {
+            if (!primeFactors.ContainsKey(n)) primeFactors[n] = 0;
+            primeFactors[n]++;
+            return;
+        }
+
+        //otherwise, find a nontrivial factor using pollard's Rho
+        BigInteger divisor = PollardRho(n);
+        //recursively factor both parts
+        FactorPollardRho(divisor, primeFactors);
+        FactorPollardRho(n / divisor, primeFactors);
+    }
+
+    //standard pollard's Rho algorithm using f(x)=x^2+1 mod n, python style comment
+    private static BigInteger PollardRho(BigInteger n)
+    {
+        //require n>1, not prime
+        if (n % 2 == 0) return 2;
+
+        //create rng for random start
+        using var rng = RandomNumberGenerator.Create();
+        while (true) {
+            //pick random seeds x, y in [2..n-2]
+            BigInteger x = RandomBigIntegerInRange(2, n - 2);
+            BigInteger y = x;
+            BigInteger c = RandomBigIntegerInRange(1, n - 1);
+
+            //g is the gcd
+            BigInteger g = 1;
+
+            while (g == 1)
+            {
+                //x = (x^2 + c) mod n
+                x = (BigInteger.ModPow(x, 2, n) + c) % n;
+                //y = f(f(y)) => do it twice
+                y = (BigInteger.ModPow(y, 2, n) + c) % n;
+                y = (BigInteger.ModPow(y, 2, n) + c) % n;
+
+                //g = gcd(|x-y|, n)
+                BigInteger diff = (x > y) ? x - y : y - x;
+                g = BigInteger.GreatestCommonDivisor(diff, n);
+
+                if (g == n) break; //retry
+            }
+
+            if (g > 1 && g < n)
+                return g; //found a divisor
+        }
+    }
+
+    //prints usage/help text along with an error message.
     private static void PrintUsageError(string errorMsg)
     {
         Console.WriteLine(errorMsg);
@@ -231,7 +283,7 @@ public class Program{
 }
 
 
-//a small helper to do approximate BigInteger square root.
+//small helper to do approximate BigInteger square root.
 public static class BigIntegerSqrtExtension{
     public static BigInteger Sqrt(this BigInteger n)
     {
@@ -243,8 +295,7 @@ public static class BigIntegerSqrtExtension{
         do
         {
             lastX = x;
-            // x = (x + n //x) >> 1;  Python style comment
-            x = (x + n / x) >> 1;   // corrected for C# division
+            x = (x + n / x) >> 1;
         } while (BigInteger.Abs(x - lastX) > 1);
         while (x * x > n) x--;
         return x;
