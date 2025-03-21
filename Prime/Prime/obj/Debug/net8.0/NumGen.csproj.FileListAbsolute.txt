@@ -1,0 +1,15 @@
+C:\Users\mnina\OneDrive\Desktop\Code\COPADS\Project 2\Project2-COPADS\Prime\Prime\bin\Debug\net8.0\NumGen.exe
+C:\Users\mnina\OneDrive\Desktop\Code\COPADS\Project 2\Project2-COPADS\Prime\Prime\bin\Debug\net8.0\NumGen.deps.json
+C:\Users\mnina\OneDrive\Desktop\Code\COPADS\Project 2\Project2-COPADS\Prime\Prime\bin\Debug\net8.0\NumGen.runtimeconfig.json
+C:\Users\mnina\OneDrive\Desktop\Code\COPADS\Project 2\Project2-COPADS\Prime\Prime\bin\Debug\net8.0\NumGen.dll
+C:\Users\mnina\OneDrive\Desktop\Code\COPADS\Project 2\Project2-COPADS\Prime\Prime\bin\Debug\net8.0\NumGen.pdb
+C:\Users\mnina\OneDrive\Desktop\Code\COPADS\Project 2\Project2-COPADS\Prime\Prime\obj\Debug\net8.0\NumGen.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\mnina\OneDrive\Desktop\Code\COPADS\Project 2\Project2-COPADS\Prime\Prime\obj\Debug\net8.0\NumGen.AssemblyInfoInputs.cache
+C:\Users\mnina\OneDrive\Desktop\Code\COPADS\Project 2\Project2-COPADS\Prime\Prime\obj\Debug\net8.0\NumGen.AssemblyInfo.cs
+C:\Users\mnina\OneDrive\Desktop\Code\COPADS\Project 2\Project2-COPADS\Prime\Prime\obj\Debug\net8.0\NumGen.csproj.CoreCompileInputs.cache
+C:\Users\mnina\OneDrive\Desktop\Code\COPADS\Project 2\Project2-COPADS\Prime\Prime\obj\Debug\net8.0\NumGen.sourcelink.json
+C:\Users\mnina\OneDrive\Desktop\Code\COPADS\Project 2\Project2-COPADS\Prime\Prime\obj\Debug\net8.0\NumGen.dll
+C:\Users\mnina\OneDrive\Desktop\Code\COPADS\Project 2\Project2-COPADS\Prime\Prime\obj\Debug\net8.0\refint\NumGen.dll
+C:\Users\mnina\OneDrive\Desktop\Code\COPADS\Project 2\Project2-COPADS\Prime\Prime\obj\Debug\net8.0\NumGen.pdb
+C:\Users\mnina\OneDrive\Desktop\Code\COPADS\Project 2\Project2-COPADS\Prime\Prime\obj\Debug\net8.0\NumGen.genruntimeconfig.cache
+C:\Users\mnina\OneDrive\Desktop\Code\COPADS\Project 2\Project2-COPADS\Prime\Prime\obj\Debug\net8.0\ref\NumGen.dll
