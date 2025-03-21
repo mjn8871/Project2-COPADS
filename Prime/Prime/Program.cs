@@ -1,3 +1,5 @@
+﻿namespace Prime;
+
 using System;
 
 class Program
