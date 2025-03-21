@@ -120,71 +120,63 @@ public class Program{
             }
         }
 
-        //Print out bit length heading (per sample format)
+        //print out bit length heading
         Console.WriteLine($"BitLength:{bits} bits");
 
-        //2) Start the stopwatch
+        //start the stopwatch
         var sw = Stopwatch.StartNew();
 
-        //3) Generate results in parallel, but do not parallelize Miller-Rabin itself.
-        //   We'll track how many we have printed so far with an atomic//olatile int.
+        //generate results in parallel, but do not parallelize Miller-Rabin itself.
         int printedCount = 0;
 
-        //We'll keep launching tasks until we have printed enough numbers.
-        //For demonstration, a simple approach: use Parallel.For or while-loop with tasks.
-        //(Be sure to lock or interlock updates to avoid races.)
+        //keep launching tasks until we have printed enough numbers.
         Parallel.For(0, count, (i, loopState) => {
             if (option == "prime") {
-                //Repeatedly generate random big-integer until we find a prime
+                //repeatedly generate random big-integer until we find a prime
                 BigInteger prime;
                 do {
                     prime = GenerateRandomBigInteger(bits, ensureOdd: true);
                 }
                 while (!prime.IsProbablyPrime());
 
-                //Output in a threadsafe manner
+                //output in a threadsafe manner
                 int idx = Interlocked.Increment(ref printedCount);
                 lock (Console.Out) {
-                    Console.WriteLine(${idx}:{prime}");
+                    Console.WriteLine($"{idx}:{prime}");
                 }
             }
             else { //option == "odd"
-                //Generate a random odd big integer of specified bit length
+                //generate a random odd big integer of specified bit length
                 BigInteger oddNum = GenerateRandomBigInteger(bits, ensureOdd: true);
 
-                //Count factors
-                //(For large numbers, you would need a faster approach than naive trial division!)
+                //count factors
                 long factorCount = CountFactors(oddNum);
 
-                //Output in a threadsafe manner
+                //output in a threadsafe manner
                 int idx = Interlocked.Increment(ref printedCount);
                 lock (Console.Out) {
-                    Console.WriteLine(${idx}:{oddNum}");
+                    Console.WriteLine($"{idx}:{oddNum}");
                     Console.WriteLine($"Number of factors:{factorCount}");
                 }
             }
         });
 
-        //4) Stop the timer and print the final time
+        //stop the timer and print the final time
         sw.Stop();
         Console.WriteLine($"Time to Generate:{sw.Elapsed}");
     }
 
     
-    //Generates a random BigInteger of exactly 'bitLength' bits.
-    //Optionally force it to be odd by setting the lowest bit.
-
+    //generates a random BigInteger of exactly 'bitLength' bits.
     private static BigInteger GenerateRandomBigInteger(int bitLength, bool ensureOdd)
-{
+    {
         if (bitLength < 1)
             throw new ArgumentException("bitLength must be >= 1");
 
-        byte[] bytes = new byte[bitLength //8];
+        byte[] bytes = new byte[bitLength / 8];
         using var rng = RandomNumberGenerator.Create();
         rng.GetBytes(bytes);
 
-        //Make sure the top bit is set to ensure the correct bit-length
-        //(Set the highest-order bit in the final byte)
         int highestBitIndex = (bitLength % 8 == 0) ? 7 : (bitLength % 8) - 1;
         bytes[^1] |= (byte)(1 << highestBitIndex);
 
@@ -192,35 +184,33 @@ public class Program{
         if (value < 0) value = -value; //ensure positive
 
         if (ensureOdd)
-    {
-            //Force LSB = 1
+        {
+            //force LSB = 1
             value |= BigInteger.One;
         }
 
         return value;
     }
-
-    
-    //Very naive factor-count method.  For extremely large numbers,
+ 
+    //very naive factor-count method.  For extremely large numbers,
     //this will be too slow!  Replace with a better factoring method for real use.
 
     private static long CountFactors(BigInteger n)
-{
+    {
         if (n <= 1) return 0;
         if (n == 2) return 2; //1,2
 
-        //We'll do trial division up to sqrt(n)
+        //we'll do trial division up to sqrt(n)
         long count = 0;
         BigInteger limit = n.Sqrt(); //or use a custom BigInteger sqrt
         for (BigInteger i = 1; i <= limit; i++)
-    {
-            if (n % i == 0)
         {
+            if (n % i == 0)
+            {
                 //i is a factor
                 count++;
 
-                //n// is another factor if distinct
-                if (i != (n //i))
+                if (i != (n / i))
                     count++;
             }
         }
@@ -228,10 +218,10 @@ public class Program{
     }
 
     
-    //Prints usage/help text along with an error message.
+    //prints usage/help text along with an error message.
 
     private static void PrintUsageError(string errorMsg)
-{
+    {
         Console.WriteLine(errorMsg);
         Console.WriteLine("Usage: dotnet run <bits> <option> <count>");
         Console.WriteLine("  bits   - number of bits (multiple of 8, >= 32)");
@@ -241,20 +231,20 @@ public class Program{
 }
 
 
-//A small helper to do approximate BigInteger square root.  
-//If you want more accurate or faster routines, see well-known algorithms.
+//a small helper to do approximate BigInteger square root.
 public static class BigIntegerSqrtExtension{
     public static BigInteger Sqrt(this BigInteger n)
-{
+    {
         if (n <= 0) return 0;
         //Newton's method
         BigInteger x = n >> 1; //divide by 2
         if (x == 0) return n;  //n < 2
         BigInteger lastX;
         do
-    {
+        {
             lastX = x;
-            x = (x + n //x) >> 1;
+            // x = (x + n //x) >> 1;  Python style comment
+            x = (x + n / x) >> 1;   // corrected for C# division
         } while (BigInteger.Abs(x - lastX) > 1);
         while (x * x > n) x--;
         return x;
