@@ -58,7 +58,7 @@ public static class BigIntegerExtensions {
     }
 
     //returns a random BigInteger in [minValue..maxValue], using RandomNumberGenerator.
-    private static BigInteger RandomBigIntegerInRange(BigInteger minValue, BigInteger maxValue) {
+    public static BigInteger RandomBigIntegerInRange(BigInteger minValue, BigInteger maxValue) {
         //assume minValue <= maxValue and both > 0
         BigInteger range = maxValue - minValue + 1;
         int byteCount = range.GetByteCount();
@@ -168,7 +168,7 @@ public class Program{
 
     
     //generates a random BigInteger of exactly 'bitLength' bits.
-    private static BigInteger GenerateRandomBigInteger(int bitLength, bool ensureOdd)
+    public static BigInteger GenerateRandomBigInteger(int bitLength, bool ensureOdd)
     {
         if (bitLength < 1)
             throw new ArgumentException("bitLength must be >= 1");
@@ -193,7 +193,7 @@ public class Program{
     }
  
     //using Pollard's Rho, then computing total factors from prime factor exponents.
-    private static long CountFactors(BigInteger n)
+    public static long CountFactors(BigInteger n)
     {
         //handle trivial cases
         if (n <= 1) return 0;
@@ -215,7 +215,7 @@ public class Program{
     }
 
     //pollard's Rho factorization approach to populate primeFactors dictionary
-    private static void FactorPollardRho(BigInteger n, Dictionary<BigInteger, long> primeFactors)
+    public static void FactorPollardRho(BigInteger n, Dictionary<BigInteger, long> primeFactors)
     {
         //if n < 2, nothing to do
         if (n < 2) return;
@@ -235,7 +235,7 @@ public class Program{
     }
 
     //standard pollard's Rho algorithm using f(x)=x^2+1 mod n, python style comment
-    private static BigInteger PollardRho(BigInteger n)
+    public static BigInteger PollardRho(BigInteger n)
     {
         //require n>1, not prime
         if (n % 2 == 0) return 2;
@@ -244,9 +244,9 @@ public class Program{
         using var rng = RandomNumberGenerator.Create();
         while (true) {
             //pick random seeds x, y in [2..n-2]
-            BigInteger x = RandomBigIntegerInRange(2, n - 2);
+            BigInteger x = BigIntegerExtensions.RandomBigIntegerInRange(2, n - 2);
             BigInteger y = x;
-            BigInteger c = RandomBigIntegerInRange(1, n - 1);
+            BigInteger c = BigIntegerExtensions.RandomBigIntegerInRange(1, n - 1);
 
             //g is the gcd
             BigInteger g = 1;
@@ -272,7 +272,7 @@ public class Program{
     }
 
     //prints usage/help text along with an error message.
-    private static void PrintUsageError(string errorMsg)
+    public static void PrintUsageError(string errorMsg)
     {
         Console.WriteLine(errorMsg);
         Console.WriteLine("Usage: dotnet run <bits> <option> <count>");
